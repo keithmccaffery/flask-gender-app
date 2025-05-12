@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>German Noun Gender Quiz</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>What is the gender of this noun?</h1>
+        <h2>{{ noun.word }}</h2>
+        <form action="{{ url_for('check') }}" method="POST">
+            <input type="hidden" name="correct_gender" value="{{ noun.gender }}">
+            <input type="hidden" name="noun" value="{{ noun.word }}">
+            <input type="hidden" name="identifier_id" value="{{ noun.identifier_id }}">
+            <input type="hidden" name="meaning" value="{{ noun.meaning }}">
+            <label>
+                <input type="radio" name="gender" value="der"> Der
+            </label><br>
+            <label>
+                <input type="radio" name="gender" value="die"> Die
+            </label><br>
+            <label>
+                <input type="radio" name="gender" value="das"> Das
+            </label><br><br>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</body>
+</html>
