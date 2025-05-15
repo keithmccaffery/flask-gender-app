@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
 import random
 import os
-
+from gtts import gTTS
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)  # Generate a new secret key on each restart
@@ -40,6 +40,7 @@ def index():
     noun = get_random_noun()
     return render_template('index.html', noun=noun)
 
+
 @app.route('/check', methods=['POST'])
 def check():
     selected_gender = request.form.get('gender')
@@ -47,9 +48,6 @@ def check():
     noun_word = request.form.get('noun')
     identifier_id = request.form.get('identifier_id')
     meaning = request.form.get('meaning')
-
-    # Debugging: Print session variables before updating
-    print(f"Before update: correct_count={session.get('correct_count')}, total_count={session.get('total_count')}")
 
     # Fetch reason from the identifiers table
     conn = sqlite3.connect('nouns.db')
@@ -63,7 +61,7 @@ def check():
     conn.close()
 
     # Update session counters
-    session['total_count'] += 1  # Increment total_count only after an attempt
+    session['total_count'] += 1
     if selected_gender == correct_gender:
         session['correct_count'] += 1
         result = "Correct!"
@@ -72,8 +70,18 @@ def check():
         result = "Wrong answer!"
         color = "white"
 
-    # Debugging: Print session variables after updating
-    print(f"After update: correct_count={session.get('correct_count')}, total_count={session.get('total_count')}")
+    # Generate text-to-speech audio
+    tts_text = f"{correct_gender} {noun_word}"
+    audio_path = os.path.join('static', 'audio', 'result.mp3')
+
+    # Remove the old audio file if it exists
+    if os.path.exists(audio_path):
+        os.remove(audio_path)
+
+    # Generate and save the new audio file
+    tts = gTTS(tts_text, lang='de')  # 'de' for German
+    os.makedirs(os.path.dirname(audio_path), exist_ok=True)  # Ensure the directory exists
+    tts.save(audio_path)
 
     # Calculate percentage
     percentage = (session['correct_count'] / session['total_count']) * 100
@@ -86,7 +94,8 @@ def check():
         explanation=reason,
         correct_gender=correct_gender,
         meaning=meaning,
-        percentage=percentage
+        percentage=percentage,
+        audio_file=audio_path  # Pass the audio file path to the template
     )
 
 if __name__ == '__main__':

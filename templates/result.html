@@ -23,5 +23,23 @@
         <p><strong>Correct Answers:</strong> {{ percentage|round(2) }}%</p>
         <a href="{{ url_for('index') }}" class="btn btn-primary">Try another noun</a>
     </div>
+
+    <audio id="ttsAudio" autoplay>
+        <source src="{{ url_for('static', filename='audio/result.mp3') }}" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        // Play the audio three times
+        const audio = document.getElementById('ttsAudio');
+        let playCount = 0;
+
+        audio.addEventListener('ended', () => {
+            playCount++;
+            if (playCount < 3) {
+                audio.play(); // Replay the audio
+            }
+        });
+    </script>
 </body>
 </html>
