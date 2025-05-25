@@ -8,7 +8,10 @@ __pycache__/
 venv/
 
 # Database
-*.db
+#*.db
 
 # Environment variables
 .env
+
+# Ignore all files in static/audio/
+static/audio/*

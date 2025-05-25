@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google" content="notranslate">
     <title>Result</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <style>
         body {
             background-color: {% if color == "blue" %}#add8e6{% elif color == "green" %}#90ee90{% elif color == "pink" %}pink{% else %}white{% endif %};
@@ -28,18 +30,10 @@
         <source src="{{ url_for('static', filename='audio/result.mp3') }}" type="audio/mpeg">
         Your browser does not support the audio element.
     </audio>
+    <button onclick="document.getElementById('ttsAudio').currentTime=0;document.getElementById('ttsAudio').play();" aria-label="Hear Again">
+    <i class="bi bi-volume-up"></i> Hear Again
+    </button>
 
-    <script>
-        // Play the audio three times
-        const audio = document.getElementById('ttsAudio');
-        let playCount = 0;
-
-        audio.addEventListener('ended', () => {
-            playCount++;
-            if (playCount < 3) {
-                audio.play(); // Replay the audio
-            }
-        });
-    </script>
+    
 </body>
 </html>

@@ -5,27 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>German Noun Gender Quiz</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 <body>
     <div class="container">
-        <h1>What is the gender of this noun?</h1>
-        <h2>{{ noun.word }}</h2>
+        <h1>Was ist richtig?</h1>
         <form action="{{ url_for('check') }}" method="POST">
             <input type="hidden" name="correct_gender" value="{{ noun.gender }}">
             <input type="hidden" name="noun" value="{{ noun.word }}">
             <input type="hidden" name="identifier_id" value="{{ noun.identifier_id }}">
+            <input type="hidden" name="noun_id" value="{{ noun.id }}">
             <input type="hidden" name="meaning" value="{{ noun.meaning }}">
-            <label>
-                <input type="radio" name="gender" value="der"> Der
+            <label id="option-der">
+                <input type="radio" name="gender" value="der"> Der {{ noun.word }}
             </label><br>
-            <label>
-                <input type="radio" name="gender" value="die"> Die
+            <label id="option-die">
+                <input type="radio" name="gender" value="die"> Die {{ noun.word }}
             </label><br>
-            <label>
-                <input type="radio" name="gender" value="das"> Das
+            <label id="option-das">
+                <input type="radio" name="gender" value="das"> Das {{ noun.word }}
             </label><br><br>
             <button type="submit">Submit</button>
         </form>
+        <p><strong>English Translation:</strong> {{ noun.meaning }}</p>
+        <button type="button" onclick="fiftyFifty()" class="btn btn-warning" style="margin-bottom:10px;">50/50</button>
     </div>
+    <audio id="ttsAudio" autoplay>
+        <source src="{{ url_for('static', filename='audio/index.mp3') }}" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <button id="hearAgainBtn" onclick="document.getElementById('ttsAudio').currentTime=0;document.getElementById('ttsAudio').play();" aria-label="Hear Again">
+        <i class="bi bi-volume-up"></i> Hear Again
+    </button>
+    <script>
+    window.addEventListener('DOMContentLoaded', function() {
+        var audio = document.getElementById('ttsAudio');
+        audio.play().catch(function() {
+            // Autoplay was blocked, optionally highlight the button
+            document.getElementById('hearAgainBtn').style.background = '#ff0';
+        });
+    });
+    </script>
+    <script>
+    function fiftyFifty() {
+        // Get the correct gender from the hidden input
+        var correct = document.querySelector('input[name="correct_gender"]').value;
+        var options = ["der", "die", "das"];
+        // Remove the correct answer from the array
+        var incorrect = options.filter(opt => opt !== correct);
+        // Randomly pick one incorrect to hide
+        var toHide = incorrect[Math.floor(Math.random() * incorrect.length)];
+        document.getElementById("option-" + toHide).style.display = "none";
+        // Optionally, disable the button after use
+        event.target.disabled = true;
+    }
+    </script>
 </body>
 </html>

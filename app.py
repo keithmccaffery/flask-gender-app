@@ -3,6 +3,11 @@ import sqlite3
 import random
 import os
 from gtts import gTTS
+from datetime import datetime
+import pytz
+
+aest = pytz.timezone('Australia/Sydney')
+now = datetime.now(aest).strftime("%Y-%m-%d %H:%M:%S")
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)  # Generate a new secret key on each restart
@@ -38,7 +43,18 @@ def index():
         session['total_count'] = 0
 
     noun = get_random_noun()
+    # Generate the text to be s
+    tts_text = f"Der {noun['word']}, oder Die {noun['word']}, oder Das {noun['word']}"
+    audio_path = os.path.join('static', 'audio', 'index.mp3')
+    # Remove old audio if exists
+    if os.path.exists(audio_path):
+        os.remove(audio_path)
+    # Generate and save new audio
+    tts = gTTS(tts_text, lang='de')
+    os.makedirs(os.path.dirname(audio_path), exist_ok=True)
+    tts.save(audio_path)
     return render_template('index.html', noun=noun)
+
 
 
 @app.route('/check', methods=['POST'])
@@ -48,6 +64,7 @@ def check():
     noun_word = request.form.get('noun')
     identifier_id = request.form.get('identifier_id')
     meaning = request.form.get('meaning')
+    noun_id = request.form.get('noun_id')
 
     # Fetch reason from the identifiers table
     conn = sqlite3.connect('nouns.db')
@@ -69,9 +86,19 @@ def check():
     else:
         result = "Wrong answer!"
         color = "white"
+        # Record the mistake
+        conn = sqlite3.connect('nouns.db')
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO mistakes (noun_id, noun, correct_gender, user_answer, meaning, timestamp) VALUES (?, ?, ?, ?, ?, ?)",
+            (noun_id, noun_word, correct_gender, selected_gender, meaning, now)
+        )
+        conn.commit()
+        conn.close()
 
     # Generate text-to-speech audio
-    tts_text = f"{correct_gender} {noun_word}"
+    # Generate text-to-speech audio with pauses
+    tts_text = f"{correct_gender} {noun_word} , , , , ,  {correct_gender} {noun_word} , , , , ,  {correct_gender} {noun_word}"
     audio_path = os.path.join('static', 'audio', 'result.mp3')
 
     # Remove the old audio file if it exists
