@@ -23,7 +23,9 @@
         <p><strong>English Translation:</strong> {{ meaning }}</p>
         <p><strong>Explanation:</strong> {{ explanation }}</p>
         <p><strong>Correct Answers:</strong> {{ percentage|round(2) }}%</p>
-        <a href="{{ url_for('index') }}" class="btn btn-primary">Try another noun</a>
+        <a href="{{ url_for('index', set_id=set_id) }}" class="btn btn-primary">Try another noun</a>
+        <a href="{{ url_for('select_set') }}" class="btn btn-secondary mt-2">Change Set</a>
+        <p>set_id: {{ set_id }}</p>
     </div>
 
     <audio id="ttsAudio" autoplay>

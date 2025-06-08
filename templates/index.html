@@ -11,6 +11,7 @@
     <div class="container">
         <h1>Was ist richtig?</h1>
         <form action="{{ url_for('check') }}" method="POST">
+            <input type="hidden" name="set_id" value="{{ set_id }}">
             <input type="hidden" name="correct_gender" value="{{ noun.gender }}">
             <input type="hidden" name="noun" value="{{ noun.word }}">
             <input type="hidden" name="identifier_id" value="{{ noun.identifier_id }}">
